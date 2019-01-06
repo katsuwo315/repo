@@ -1,5 +1,5 @@
 /*
- * jQuery.ajax mid - CROSS DOMAIN AJAX
+ * jQuery.ajax mid - CROSS DOMAIN AJAX 
  * ---
  * @author James Padolsey (http://james.padolsey.com)
  * @version 0.11
@@ -11,28 +11,28 @@
  */
 
 jQuery.ajax = (function(_ajax){
-
+    
     var protocol = location.protocol,
         hostname = location.hostname,
         exRegex = RegExp(protocol + '//' + hostname),
         YQL = 'http' + (/^https/.test(protocol)?'s':'') + '://query.yahooapis.com/v1/public/yql?callback=?&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys',
         query = 'select * from htmlstring where url="{URL}" and xpath="*"';
-
+    
     function isExternal(url) {
         return !exRegex.test(url) && /:\/\//.test(url);
     }
-
+    
     return function(o) {
-
+        
         var url = o.url;
-
+        
         if ( /get/i.test(o.type) && !/json/i.test(o.dataType) && isExternal(url) ) {
-
+            
             // Manipulate options so that JSONP-x request is made to YQL
-
+            
             o.url = YQL;
             o.dataType = 'json';
-
+            
             o.data = {
                 q: query.replace(
                     '{URL}',
@@ -44,14 +44,14 @@ jQuery.ajax = (function(_ajax){
 				diagnostics: true,
 				env: 'store://datatables.org/alltableswithkeys',
             };
-
+            
             // Since it's a JSONP request
             // complete === success
             if (!o.success && o.complete) {
                 o.success = o.complete;
                 delete o.complete;
             }
-
+            
             o.success = (function(_success){
                 return function(data) {
     if (_success) {
@@ -60,14 +60,14 @@ jQuery.ajax = (function(_ajax){
         _success.call(this, {
             responseText: text
         }, 'success');                    }
-
+                    
                 };
             })(o.success);
-
+            
         }
-
+        
         return _ajax.apply(this, arguments);
-
+        
     };
-
+    
 })(jQuery.ajax);
